@@ -1,0 +1,21 @@
+{
+  "name": "uptime-monitoring-api---raw-node-js",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon app",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saadahmedscse/Uptime-Monitoring-API-Node-JS.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/saadahmedscse/Uptime-Monitoring-API-Node-JS/issues"
+  },
+  "homepage": "https://github.com/saadahmedscse/Uptime-Monitoring-API-Node-JS#readme"
+}
