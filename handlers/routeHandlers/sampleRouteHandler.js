@@ -6,10 +6,14 @@
  */
 
 //module scaffolding
-const handler = {}
+const handler = {};
 
-handler.sampleHandler = () => {
-    console.log("sample")
-}
+handler.sampleHandler = (requestProperties, callback) => {
+  console.log("Entered in sample");
+  callback(200, {
+    status: "Success",
+    message: "Node JS is great",
+  });
+};
 
 module.exports = handler;
