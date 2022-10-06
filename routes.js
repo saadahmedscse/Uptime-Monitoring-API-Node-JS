@@ -5,12 +5,13 @@
  * Date: 04-Oct-2022
  */
 
+//dependencies
 const {
   sampleHandler,
 } = require("./handlers/routeHandlers/sampleRouteHandler");
 
-//dependencies
-
-const route = {
-  sample: sampleHandler,
+const routes = {
+  "api/sample": sampleHandler,
 };
+
+module.exports = routes;
