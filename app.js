@@ -8,20 +8,19 @@
 //Dependencies
 const http = require("http");
 const { handleReqRes } = require("./helper/handleReqRes");
+require("dotenv").config();
 
 //app object - module scaffolding
 const app = {};
 
-//Configuration
-app.config = {
-  port: 3000,
-};
+//Port
+const port = process.env.PORT || 3000;
 
 //Create server
 app.createServer = () => {
   const server = http.createServer(app.handleReqRes);
-  server.listen(app.config.port, () => {
-    console.log(`Listening on port ${app.config.port}`);
+  server.listen(port, () => {
+    console.log(`Listening on port ${port}`);
   });
 };
 
