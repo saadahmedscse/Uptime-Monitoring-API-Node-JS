@@ -26,8 +26,30 @@ handler.handleReqRes = (req, res) => {
   const queryObject = parsedUrl.query;
   const headersObject = req.headers;
 
+  const requestProperties = {
+    parsedUrl,
+    path,
+    trimmedPath,
+    method,
+    queryObject,
+    headersObject,
+  };
+
   const decoder = new StringDecoder("utf-8");
   let realData = "";
+
+  const chosenHandler = routes[trimmedPath]
+    ? routes[trimmedPath]
+    : notFoundHandler;
+
+  chosenHandler(requestProperties, (statusCode, body) => {
+    statusCode = typeof statusCode === "number" ? statusCode : 500;
+    body = typeof body === "object" ? body : {};
+
+    const bodyString = JSON.stringify(body);
+    res.writeHead(statusCode);
+    res.end(bodyString);
+  });
 
   req.on("data", (buffer) => {
     realData += decoder.write(buffer);
@@ -36,10 +58,9 @@ handler.handleReqRes = (req, res) => {
   req.on("end", () => {
     realData += decoder.end();
     console.log(realData);
+    //response handle
+    res.end("Hello World");
   });
-
-  //response handle
-  res.end("Hello World");
 };
 
 module.exports = handler;
