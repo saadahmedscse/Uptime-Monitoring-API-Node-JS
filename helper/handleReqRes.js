@@ -42,24 +42,21 @@ handler.handleReqRes = (req, res) => {
     ? routes[trimmedPath]
     : notFoundHandler;
 
-  chosenHandler(requestProperties, (statusCode, body) => {
-    statusCode = typeof statusCode === "number" ? statusCode : 500;
-    body = typeof body === "object" ? body : {};
-
-    const bodyString = JSON.stringify(body);
-    res.writeHead(statusCode);
-    res.end(bodyString);
-  });
-
   req.on("data", (buffer) => {
     realData += decoder.write(buffer);
   });
 
   req.on("end", () => {
     realData += decoder.end();
-    console.log(realData);
-    //response handle
-    res.end("Hello World");
+
+    chosenHandler(requestProperties, (statusCode, body) => {
+      statusCode = typeof statusCode === "number" ? statusCode : 500;
+      body = typeof body === "object" ? body : {};
+
+      const bodyString = JSON.stringify(body);
+      res.writeHead(statusCode);
+      res.end(bodyString);
+    });
   });
 };
 
