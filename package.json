@@ -17,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/saadahmedscse/Uptime-Monitoring-API-Node-JS/issues"
   },
-  "homepage": "https://github.com/saadahmedscse/Uptime-Monitoring-API-Node-JS#readme"
+  "homepage": "https://github.com/saadahmedscse/Uptime-Monitoring-API-Node-JS#readme",
+  "dependencies": {
+    "dotenv": "^16.0.3"
+  }
 }
