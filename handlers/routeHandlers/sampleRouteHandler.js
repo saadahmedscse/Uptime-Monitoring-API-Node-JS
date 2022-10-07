@@ -9,7 +9,6 @@
 const handler = {};
 
 handler.sampleHandler = (requestProperties, callback) => {
-  console.log("Entered in sample");
   callback(200, {
     status: "Success",
     message: "Node JS is great",
