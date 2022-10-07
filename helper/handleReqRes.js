@@ -50,6 +50,7 @@ handler.handleReqRes = (req, res) => {
   req.on("end", () => {
     realData += decoder.end();
 
+    //console.log(realData);
     requestProperties.body = parseJson(realData);
 
     chosenHandler(requestProperties, (statusCode, body) => {
