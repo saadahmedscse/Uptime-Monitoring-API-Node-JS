@@ -1,0 +1,18 @@
+/**
+ * Title: User Handler
+ * Description: Handle user creation, get, update and delete requests
+ * Author: Saad Ahmed
+ * Date: 07-Oct-2022
+ */
+
+//module scaffolding
+handler = {};
+
+handler.userHandler = (requestProperties, callback) => {
+  callback(200, {
+    status: "Success",
+    message: "You entered in nodeJs user",
+  });
+};
+
+module.exports = handler;
