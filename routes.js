@@ -10,8 +10,11 @@ const {
   sampleHandler,
 } = require("./handlers/routeHandlers/sampleRouteHandler");
 
+const { userHandler } = require("./handlers/routeHandlers/userHandler");
+
 const routes = {
   "api/sample": sampleHandler,
+  "api/user": userHandler,
 };
 
 module.exports = routes;
