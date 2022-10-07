@@ -12,6 +12,7 @@ const routes = require("../routes");
 const {
   notFoundHandler,
 } = require("../handlers/routeHandlers/notFoundHandler");
+const { parseJson } = require("../helper/utils");
 
 //handle object - module scaffolding
 const handler = {};
@@ -48,6 +49,8 @@ handler.handleReqRes = (req, res) => {
 
   req.on("end", () => {
     realData += decoder.end();
+
+    requestProperties.body = parseJson(realData);
 
     chosenHandler(requestProperties, (statusCode, body) => {
       statusCode = typeof statusCode === "number" ? statusCode : 500;
