@@ -54,6 +54,9 @@ handler.handleReqRes = (req, res) => {
       body = typeof body === "object" ? body : {};
 
       const bodyString = JSON.stringify(body);
+
+      //return to user
+      res.setHeader("Content-Type", "application/json");
       res.writeHead(statusCode);
       res.end(bodyString);
     });
