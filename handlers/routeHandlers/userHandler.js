@@ -186,7 +186,7 @@ handler._user.put = (requestProperties, callback) => {
           data.update(phone, user, (err) => {
             if (!err) {
               callback(200, {
-                status: "Failed",
+                status: "Success",
                 message: "User updated successfully",
               });
             } else {
