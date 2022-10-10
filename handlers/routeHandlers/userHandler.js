@@ -218,10 +218,42 @@ handler._user.put = (requestProperties, callback) => {
 };
 
 handler._user.delete = (requestProperties, callback) => {
-  callback(200, {
-    status: "Success",
-    message: "This is a delete method",
-  });
+  const body = requestProperties.body;
+
+  const phone =
+    typeof body.phone === "string" && body.phone.length === 11
+      ? body.phone
+      : false;
+
+  if (phone) {
+    data.read(phone, (err, userData) => {
+      if (!err) {
+        data.delete(phone, (err) => {
+          if (!err) {
+            callback(200, {
+              status: "Success",
+              message: "User Deleted successfully",
+            });
+          } else {
+            callback(400, {
+              status: "Failed",
+              message: "An error occurred while deleting your data",
+            });
+          }
+        });
+      } else {
+        callback(400, {
+          status: "Failed",
+          message: "No user found with this number",
+        });
+      }
+    });
+  } else {
+    callback(400, {
+      status: "Failed",
+      message: "Invalid Phone number",
+    });
+  }
 };
 
 module.exports = handler;
