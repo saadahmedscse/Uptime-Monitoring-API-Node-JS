@@ -143,10 +143,78 @@ handler._user.get = (requestProperties, callback) => {
 };
 
 handler._user.put = (requestProperties, callback) => {
-  callback(200, {
-    status: "Success",
-    message: "This is a put method",
-  });
+  const body = requestProperties.body;
+
+  const firstName =
+    typeof requestProperties.body.firstName === "string" &&
+    requestProperties.body.firstName.trim().length > 0
+      ? requestProperties.body.firstName
+      : false;
+
+  const lastName =
+    typeof body.lastName === "string" && body.lastName.trim().length > 0
+      ? body.lastName
+      : false;
+
+  const phone =
+    typeof body.phone === "string" && body.phone.trim().length === 11
+      ? body.phone
+      : false;
+
+  const password =
+    typeof body.password === "string" && body.password.trim().length > 0
+      ? body.password
+      : false;
+
+  const tosAgreement =
+    typeof body.tosAgreement === "boolean" && body.password.trim().length > 0
+      ? body.tosAgreement
+      : false;
+
+  if (phone) {
+    if (firstName || lastName || password) {
+      data.read(phone, (err, userData) => {
+        if (!err && userData) {
+          const user = utils.parseJson(userData);
+
+          if (firstName) user.firstName = firstName;
+          if (lastName) user.lastName = lastName;
+          if (password) user.password = utils.getHash(password);
+
+          user.fullName = `${user.firstName} ${user.lastName}`;
+
+          data.update(phone, user, (err) => {
+            if (!err) {
+              callback(200, {
+                status: "Failed",
+                message: "User updated successfully",
+              });
+            } else {
+              callback(400, {
+                status: "Failed",
+                message: "User upadte failed, try again later",
+              });
+            }
+          });
+        } else {
+          callback(400, {
+            status: "Failed",
+            message: "No user found with this number",
+          });
+        }
+      });
+    } else {
+      callback(400, {
+        status: "Failed",
+        message: "Server error, try again later",
+      });
+    }
+  } else {
+    callback(400, {
+      status: "Failed",
+      message: "Invalid Phone number length",
+    });
+  }
 };
 
 handler._user.delete = (requestProperties, callback) => {
