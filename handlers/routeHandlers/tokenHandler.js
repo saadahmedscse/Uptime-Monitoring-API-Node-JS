@@ -63,11 +63,11 @@ handler._token.post = (requestProperties, callback) => {
             expires,
           };
 
-          data.create("token " + phone, tokenObj, (err) => {
+          data.create(token, tokenObj, (err) => {
             if (!err) {
               callback(200, {
                 status: "Success",
-                message: "Token has been created successfully",
+                data: tokenObj,
               });
             } else {
               callback(500, {
@@ -92,10 +92,126 @@ handler._token.post = (requestProperties, callback) => {
   }
 };
 
-handler._token.get = (requestProperties, callback) => {};
+handler._token.get = (requestProperties, callback) => {
+  const queryObj = requestProperties.queryObject;
 
-handler._token.put = (requestProperties, callback) => {};
+  const token =
+    typeof queryObj.token === "string" && queryObj.token.length === 16
+      ? queryObj.token
+      : false;
 
-handler._token.delete = (requestProperties, callback) => {};
+  if (token) {
+    data.read(token, (err, tokenData) => {
+      if (!err) {
+        const token = utils.parseJson(tokenData);
+        callback(200, {
+          status: "Success",
+          data: token,
+        });
+      } else {
+        callback(400, {
+          status: "Failed",
+          message: "No token data found using this id",
+        });
+      }
+    });
+  } else {
+    callback(400, {
+      status: "Failed",
+      message: "Invalid token",
+    });
+  }
+};
+
+handler._token.put = (requestProperties, callback) => {
+  const body = requestProperties.body;
+
+  const token =
+    typeof body.token === "string" && body.token.trim().length === 16
+      ? body.token
+      : false;
+
+  const extend =
+    typeof body.extend === "boolean" && body.extend === true ? true : false;
+
+  if (token && extend) {
+    data.read(token, (err, tokenData) => {
+      if (!err) {
+        const tokenObj = utils.parseJson(tokenData);
+        if (tokenObj.expires > Date.now()) {
+          tokenObj.expires = Date.now() * 60 * 60 * 1000;
+
+          data.update(token, tokenObj, (err) => {
+            if (!err) {
+              callback(200, {
+                status: "Success",
+                message: "Token has been updated successfully",
+              });
+            } else {
+              callback(500, {
+                status: "Failed",
+                message: err,
+              });
+            }
+          });
+        } else {
+          callback(400, {
+            status: "Failed",
+            message: "Token already expired",
+          });
+        }
+      } else {
+        callback(400, {
+          status: "Failed",
+          message: "No token found with this token",
+        });
+      }
+    });
+  } else {
+    callback(400, {
+      status: "Failed",
+      message: "There was a problem in your request",
+    });
+  }
+};
+
+handler._token.delete = (requestProperties, callback) => {
+  const body = requestProperties.body;
+
+  const token =
+    typeof body.token === "string" && body.token.length === 16
+      ? body.token
+      : false;
+
+  if (token) {
+    data.read(token, (err, tokenData) => {
+      if (!err) {
+        data.delete(token, (err) => {
+          if (!err) {
+            callback(200, {
+              status: "Success",
+              message: "Token Deleted successfully",
+            });
+          } else {
+            callback(400, {
+              status: "Failed",
+              message: "An error occurred while deleting your data",
+            });
+          }
+        });
+      } else {
+        callback(400, {
+          status: "Failed",
+          message: "No token data found with this token",
+        });
+      }
+    });
+  } else {
+    callback(400, {
+      status: "Failed",
+      message: "Invalid token",
+    });
+  }
+};
 
 module.exports = handler;
