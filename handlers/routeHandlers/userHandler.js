@@ -166,11 +166,6 @@ handler._user.put = (requestProperties, callback) => {
       ? body.password
       : false;
 
-  const tosAgreement =
-    typeof body.tosAgreement === "boolean" && body.password.trim().length > 0
-      ? body.tosAgreement
-      : false;
-
   if (phone) {
     if (firstName || lastName || password) {
       data.read(phone, (err, userData) => {
