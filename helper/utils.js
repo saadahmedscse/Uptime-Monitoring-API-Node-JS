@@ -34,4 +34,15 @@ utilities.getHash = (str) => {
   return hash;
 };
 
+//get random token
+utilities.getRandomToken = (size) => {
+  let res = "";
+  const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
+  const len = characters.length;
+  for (let i = 0; i < size; i++) {
+    res += characters.charAt(Math.floor(Math.random() * len));
+  }
+  return res;
+};
+
 module.exports = utilities;
