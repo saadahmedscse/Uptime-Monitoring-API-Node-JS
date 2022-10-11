@@ -8,6 +8,7 @@
 //dependencies
 const data = require("../../lib/data");
 const utils = require("../../helper/utils");
+const tokenHandler = require("./tokenHandler");
 
 //module scaffolding
 handler = {};
@@ -119,18 +120,33 @@ handler._user.get = (requestProperties, callback) => {
       : false;
 
   if (phone) {
-    data.read(phone, (err, userData) => {
-      if (!err) {
-        const user = utils.parseJson(userData);
-        delete user.password;
-        callback(200, {
-          status: "Success",
-          data: user,
+    const headers = requestProperties.headersObject;
+    const token =
+      typeof headers.token === "string" && headers.token.length === 16
+        ? headers.token
+        : false;
+
+    tokenHandler._token.verify(token, phone, (_) => {
+      if (_) {
+        data.read(phone, (err, userData) => {
+          if (!err) {
+            const user = utils.parseJson(userData);
+            delete user.password;
+            callback(200, {
+              status: "Success",
+              data: user,
+            });
+          } else {
+            callback(400, {
+              status: "Failed",
+              message: "No user found with this number",
+            });
+          }
         });
       } else {
-        callback(400, {
+        callback(403, {
           status: "Failed",
-          message: "No user found with this number",
+          message: "You are unauthenticated",
         });
       }
     });
@@ -167,43 +183,58 @@ handler._user.put = (requestProperties, callback) => {
       : false;
 
   if (phone) {
-    if (firstName || lastName || password) {
-      data.read(phone, (err, userData) => {
-        if (!err && userData) {
-          const user = utils.parseJson(userData);
+    const headers = requestProperties.headersObject;
+    const token =
+      typeof headers.token === "string" && headers.token.length === 16
+        ? headers.token
+        : false;
 
-          if (firstName) user.firstName = firstName;
-          if (lastName) user.lastName = lastName;
-          if (password) user.password = utils.getHash(password);
+    tokenHandler._token.verify(token, phone, (_) => {
+      if (_) {
+        if (firstName || lastName || password) {
+          data.read(phone, (err, userData) => {
+            if (!err && userData) {
+              const user = utils.parseJson(userData);
 
-          user.fullName = `${user.firstName} ${user.lastName}`;
+              if (firstName) user.firstName = firstName;
+              if (lastName) user.lastName = lastName;
+              if (password) user.password = utils.getHash(password);
 
-          data.update(phone, user, (err) => {
-            if (!err) {
-              callback(200, {
-                status: "Success",
-                message: "User updated successfully",
+              user.fullName = `${user.firstName} ${user.lastName}`;
+
+              data.update(phone, user, (err) => {
+                if (!err) {
+                  callback(200, {
+                    status: "Success",
+                    message: "User updated successfully",
+                  });
+                } else {
+                  callback(400, {
+                    status: "Failed",
+                    message: "User upadte failed, try again later",
+                  });
+                }
               });
             } else {
               callback(400, {
                 status: "Failed",
-                message: "User upadte failed, try again later",
+                message: "No user found with this number",
               });
             }
           });
         } else {
-          callback(400, {
+          callback(500, {
             status: "Failed",
-            message: "No user found with this number",
+            message: "Server error, try again later",
           });
         }
-      });
-    } else {
-      callback(400, {
-        status: "Failed",
-        message: "Server error, try again later",
-      });
-    }
+      } else {
+        callback(403, {
+          status: "Failed",
+          message: "You are unauthenticated",
+        });
+      }
+    });
   } else {
     callback(400, {
       status: "Failed",
@@ -221,25 +252,40 @@ handler._user.delete = (requestProperties, callback) => {
       : false;
 
   if (phone) {
-    data.read(phone, (err, userData) => {
-      if (!err) {
-        data.delete(phone, (err) => {
+    const headers = requestProperties.headersObject;
+    const token =
+      typeof headers.token === "string" && headers.token.length === 16
+        ? headers.token
+        : false;
+
+    tokenHandler._token.verify(token, phone, (_) => {
+      if (_) {
+        data.read(phone, (err, userData) => {
           if (!err) {
-            callback(200, {
-              status: "Success",
-              message: "User Deleted successfully",
+            data.delete(phone, (err) => {
+              if (!err) {
+                callback(200, {
+                  status: "Success",
+                  message: "User Deleted successfully",
+                });
+              } else {
+                callback(400, {
+                  status: "Failed",
+                  message: "An error occurred while deleting your data",
+                });
+              }
             });
           } else {
             callback(400, {
               status: "Failed",
-              message: "An error occurred while deleting your data",
+              message: "No user found with this number",
             });
           }
         });
       } else {
-        callback(400, {
+        callback(403, {
           status: "Failed",
-          message: "No user found with this number",
+          message: "You are unauthenticated",
         });
       }
     });
